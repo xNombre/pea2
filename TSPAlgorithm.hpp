@@ -4,8 +4,14 @@
 #include "CitiesMatrix.hpp"
 
 struct TSPResult {
+    typedef Array<size_t> path_arr_t;
     size_t total_weight;
-    Array<size_t> path;
+    path_arr_t path;
+
+    TSPResult() { }
+    TSPResult(const size_t size)
+        : path(size)
+    {}
 };
 
 class TSPAlgorithm {

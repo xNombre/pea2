@@ -5,11 +5,10 @@
 
 #include "CitiesGraphReader.hpp"
 #include "CitiesMatrixPrinter.hpp"
-#include "BruteForceTSP.hpp"
+#include "AnnealingTSP.hpp"
+#include "TabuSearchTSP.hpp"
 #include "ArrayPrinter.hpp"
-#include "BranchnBoundTSP.hpp"
 #include "RandomGraphGen.hpp"
-#include "DynamicTSP.hpp"
 #include "TimeBench.hpp"
 #include "TimeBench.cpp"
 #include "Benchmark.hpp"
@@ -65,35 +64,6 @@ void solve_tsp(std::unique_ptr<TSPAlgorithm> alg)
     }
 }
 
-std::unique_ptr<TSPAlgorithm> choose_bnb_container(const CitiesMatrix &graph)
-{
-    std::unique_ptr<TSPAlgorithm> ptr;
-
-    char input;
-    cout << "Wybierz kontener:\n"
-        << "p - priority_queue\n"
-        << "s - stack\n"
-        << "q - queue\n";
-    input = getOptionFromUser();
-
-    switch (input) {
-    case 'p': {
-        ptr = std::make_unique<BranchnBoundTSP<std::priority_queue>>(graph);
-        break;
-    }
-    case 's': {
-        ptr = std::make_unique<BranchnBoundTSP<std::stack>>(graph);
-        break;
-    }
-    case 'q': {
-        ptr = std::make_unique<BranchnBoundTSP<std::queue>>(graph);
-        break;
-    }
-    }
-
-    return ptr;
-}
-
 void menu()
 {
     CitiesMatrix graph;
@@ -103,9 +73,8 @@ void menu()
             << "f - odczyt z pliku\n"
             << "r - losowa generacja\n"
             << "x - wyswietl graf\n"
-            << "b - brute-force\n"
-            << "a - branch&bound\n"
-            << "d - dynamic\n"
+            << "a - brute-force\n"
+            << "t - dynamic\n"
             << "s - benchmark\n"
             << "q - wyjscie\n";
         input = getOptionFromUser();
@@ -126,16 +95,12 @@ void menu()
             CitiesMatrixPrinter::print(graph);
             break;
         }
-        case 'b': {
-            solve_tsp(std::make_unique<BruteForceTSP>(graph));
-            break;
-        }
         case 'a': {
-            solve_tsp(choose_bnb_container(graph));
+            solve_tsp(std::make_unique<TabuSearchTSP>(graph));
             break;
         }
-        case 'd': {
-            solve_tsp(std::make_unique<DynamicTSP>(graph));
+        case 't': {
+            solve_tsp(std::make_unique<AnnealingTSP>(graph));
             break;
         }
         case 'q': {

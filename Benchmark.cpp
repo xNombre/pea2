@@ -5,11 +5,10 @@
 #include <unordered_map>
 #include <vector>
 
-#include "DynamicTSP.hpp"
-#include "BranchnBoundTSP.hpp"
 #include "TimeBench.hpp"
 #include "RandomGraphGen.hpp"
-#include "BruteForceTSP.hpp"
+#include "AnnealingTSP.hpp"
+#include "TabuSearchTSP.hpp"
 
 typedef std::unordered_map<std::type_index, std::pair<duration_t, size_t>> results_t; // duration, timeouts
 typedef std::vector<std::pair<size_t, results_t>> results_array_t; // size, duration, timeouts
@@ -41,20 +40,11 @@ std::optional<duration_t> Benchmark::solve_tsp(std::shared_ptr<TSPAlgorithm> alg
 
 std::string Benchmark::get_name_of_algorithm(std::type_index alg)
 {
-    if (alg == typeid(BruteForceTSP)) {
-        return "Brute Force";
+    if (alg == typeid(AnnealingTSP)) {
+        return "Annealing";
     }
-    else if (alg == typeid(DynamicTSP)) {
-        return "Dynamic";
-    }
-    else if (alg == typeid(BranchnBoundTSP<std::queue>)) {
-        return "BnB queue";
-    }
-    else if (alg == typeid(BranchnBoundTSP<std::stack>)) {
-        return "BnB stack";
-    }
-    else if (alg == typeid(BranchnBoundTSP<std::priority_queue>)) {
-        return "BnB priority_queue";
+    else if (alg == typeid(TabuSearchTSP)) {
+        return "Tabu Search";
     }
 
     return "";
@@ -71,18 +61,14 @@ void Benchmark::start_benchmark()
             const auto &matrix = RandomGraphGen::generate(size, Constants::max_city_weight);
 
             std::unordered_map<std::type_index, std::shared_ptr<TSPAlgorithm>> algorithms = {
-                {typeid(BruteForceTSP), std::make_shared<BruteForceTSP>(matrix)},
+                /*{typeid(BruteForceTSP), std::make_shared<BruteForceTSP>(matrix)},
                 {typeid(DynamicTSP), std::make_shared<DynamicTSP>(matrix)},
                 {typeid(BranchnBoundTSP<std::queue>), std::make_shared<BranchnBoundTSP<std::queue>>(matrix)},
                 {typeid(BranchnBoundTSP<std::stack>), std::make_shared<BranchnBoundTSP<std::stack>>(matrix)},
-                {typeid(BranchnBoundTSP<std::priority_queue>), std::make_shared<BranchnBoundTSP<std::priority_queue>>(matrix)}
+                {typeid(BranchnBoundTSP<std::priority_queue>), std::make_shared<BranchnBoundTSP<std::priority_queue>>(matrix)}*/
             };
 
             for (auto &alg : algorithms) {
-                std::type_index type = typeid(BranchnBoundTSP<std::queue>);
-                if (alg.first == type && size > 11)
-                    continue;
-                
                 std::cout << "Running " << get_name_of_algorithm(alg.first) << " with size " << size << " iteration " << i << "\n";
                 auto result = solve_tsp(alg.second);
 
