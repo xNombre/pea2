@@ -10,11 +10,11 @@ public:
         : TSPAlgorithm(matrix),
         generator(random_dev()),
         random_probability(0.0, 1.0),
-        cities_probability(0, matrix.get_cities_number() - 1),
-        best_result(matrix.get_cities_number())
+        cities_probability(0, matrix.get_cities_number() - 2),
+        best_result(matrix.get_cities_number() - 1)
     {
-        for (size_t i = 0; i < matrix.get_cities_number(); i++) {
-            best_result.path[i] = i;
+        for (size_t i = 0; i < matrix.get_cities_number() - 1; i++) {
+            best_result.path[i] = i + 1;
         }
     }
     

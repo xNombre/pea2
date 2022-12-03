@@ -38,7 +38,7 @@ size_t AnnealingTSP::get_cost(const TSPResult::path_arr_t &path) const
     size_t last = path[0];
     size_t sum = matrix.at(0, last);
 
-    for (size_t city = 1; city < matrix.get_cities_number(); city++) {
+    for (size_t city = 1; city < matrix.get_cities_number() - 1; city++) {
         sum += matrix.at(last, path[city]);
     }
 
@@ -75,24 +75,32 @@ void AnnealingTSP::set_initial_temp()
 TSPResult AnnealingTSP::swap_random_cities(const TSPResult &cur_result)
 {
     TSPResult result = cur_result;
-    size_t a = cities_probability(generator), b;
+    size_t a = cities_probability(generator), b, zero = 0;
 
     do {
         b = cities_probability(generator);
     } while (a == b);
 
-    std::swap(result.path[a], result.path[b]);
-    
+    auto &before_a = (a == 0 ? zero : result.path[a - 1]);
+    auto &a_swapee = result.path[a];
+    auto &after_a = (a == matrix.get_cities_number() ? zero :  result.path[a + 1]);
+
+    auto &before_b = (b == 0 ? zero : result.path[b - 1]);
+    auto &b_swapee = result.path[b];
+    auto &after_b = (b == matrix.get_cities_number() ? zero : result.path[b + 1]);
+
     const auto old_weight = matrix.at(result.path[a - 1], result.path[a]) +
         matrix.at(result.path[a], result.path[a + 1]) +
         matrix.at(result.path[b - 1], result.path[b]) +
         matrix.at(result.path[b], result.path[b + 1]);
     const auto new_weight = matrix.at(result.path[a - 1], result.path[b]) +
         matrix.at(result.path[b], result.path[a + 1]) +
-        matrix.at(result.path[a - 1], result.path[b]) +
-        matrix.at(result.path[b], result.path[a + 1]);
+        matrix.at(result.path[b - 1], result.path[a]) +
+        matrix.at(result.path[a], result.path[b + 1]);
     result.total_weight -= old_weight;
     result.total_weight += new_weight;
+    
+    std::swap(result.path[a], result.path[b]);
 
     return result;
 }
