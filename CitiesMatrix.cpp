@@ -83,8 +83,6 @@ bool CitiesMatrix::is_matrix_valid() const
 {
     for (size_t i = 0; i < cities_number; i++) {
         for (size_t j = 0; j < cities_number; j++) {
-            if (at(i, j) == 0)
-                return false;
             if (at(i, j) == -1 && i != j)
                 return false;
         }

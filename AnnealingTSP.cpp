@@ -4,8 +4,8 @@
 
 TSPResult AnnealingTSP::solve()
 {
-    generate_random_path();
-    set_initial_temp();
+    set_initial_temp_and_path();
+    std::chrono::time_point end_time = std::chrono::system_clock::now() + timeout;
 
     TSPResult cur_result = best_result;
     do {
@@ -24,7 +24,7 @@ TSPResult AnnealingTSP::solve()
         }
 
         cool_down();
-    } while (temperature > 1);
+    } while (temperature > 1 && (end_time - std::chrono::system_clock::now()).count() > 0);
 
     return best_result;
 }
@@ -65,9 +65,16 @@ void AnnealingTSP::cool_down()
     (*cool_fn)(temperature, cooling_factor);
 }
 
-void AnnealingTSP::set_initial_temp()
+void AnnealingTSP::set_initial_temp_and_path()
 {
-    temperature = best_result.total_weight * matrix.get_cities_number();
+    const size_t iterations = 5;
+    
+    for (auto i = 0; i < iterations; i++) {
+        generate_random_path();
+        temperature += best_result.total_weight;
+    }
+
+    temperature /= iterations;
 }
 
 TSPResult AnnealingTSP::swap_random_cities(const TSPResult &cur_result)

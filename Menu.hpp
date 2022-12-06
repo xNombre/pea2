@@ -81,7 +81,6 @@ void menu()
             << "r - losowa generacja\n"
             << "h - timeout\n"
             << "x - wyswietl graf\n"
-            << "a - TabuSearch\n"
             << "t - SimulatedAnnealing\n"
             << "c - cooling factor\n"
             << "v - cooling function\n"
@@ -98,7 +97,13 @@ void menu()
         case 'f': {
             string file;
             cin >> file;
-            graph = CitiesGraphReader::readFromFile(file);
+            graph = CitiesGraphReader::readFromFile(file, true);
+            break;
+        }
+        case 'j': {
+            string file;
+            cin >> file;
+            graph = CitiesGraphReader::readFromFile(file, false);
             break;
         }
         case 'x': {
@@ -110,7 +115,7 @@ void menu()
             break;
         }
         case 't': {
-            solve_tsp(std::make_unique<AnnealingTSP>(graph, cooling_factor, cooling_fn), timeout);
+            solve_tsp(std::make_unique<AnnealingTSP>(graph, cooling_factor, cooling_fn, timeout), 100min);
             break;
         }
         case 'q': {

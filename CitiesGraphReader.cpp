@@ -3,12 +3,25 @@
 #include <cassert>
 #include <stdexcept>
 
-CitiesMatrix CitiesGraphReader::readFromFile(const std::string &filename)
+CitiesMatrix CitiesGraphReader::readFromFile(const std::string &filename, bool junk_in_file)
 {
     auto fileStream = openFile(filename);
 
-    size_t numberOfCities;
+	std::string junk;
+	if (junk_in_file) {
+		do {
+			fileStream >> junk;
+		} while (junk != "DIMENSION:");
+	}
+	
+	size_t numberOfCities;
     fileStream >> numberOfCities;
+
+	if (junk_in_file) {
+		for (size_t i = 0; i < 5; i++) {
+			fileStream >> junk;
+		}
+	}
 
 	return readCostsMatrix(fileStream, numberOfCities);
 }
@@ -31,12 +44,7 @@ CitiesMatrix CitiesGraphReader::readCostsMatrix(std::ifstream &fileStream, const
 			int weight;
 			fileStream >> weight;
 
-#ifdef DEBUG
 			if (col == row) {
-				assert(weight == -1);
-			}
-#endif
-			if (weight < 0) {
 				continue;
 			}
 
